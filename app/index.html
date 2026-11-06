@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="mn" translate="no">
+<head>
+<meta charset="utf-8">
+<meta name="google" content="notranslate">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DotaLens</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='13' fill='%23151a21'/%3E%3Cpath d='M32 10L54 32L32 54L10 32Z' fill='%23e8463a'/%3E%3Cpath d='M32 24L40 32L32 40L24 32Z' fill='%23d9a441'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="logo"><span class="logo-mark">◆</span> DotaLens</div>
+    <div id="playerCard" class="pcard"></div>
+    <nav class="nav">
+      <a href="#/overview" data-r="overview">Тойм</a>
+      <a href="#/live" data-r="live">⚡ Live item зөвлөгөө</a>
+      <a href="#/recent" data-r="recent">Сүүлийн 10 — дэлгэрэнгүй</a>
+      <a href="#/matches" data-r="matches">Тоглолтууд</a>
+      <a href="#/heroes" data-r="heroes">Баатрууд</a>
+      <a href="#/settings" data-r="settings">Тохиргоо</a>
+    </nav>
+    <div id="pq" class="muted" style="font-size:12px"></div>
+    <div class="side-foot">Өгөгдөл: OpenDota API</div>
+  </aside>
+  <main id="view" class="main"></main>
+</div>
+<script src="analysis.js"></script>
+<script src="items.js"></script>
+<script src="live.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
