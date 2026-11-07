@@ -2,39 +2,7 @@
 /* Тухайн тоглолтын нөхцөлд тулгуурласан item зөвлөгөө.
    Нийтлэг build биш: дайсны баатрууд, чамд ирсэн damage-ийн төрөл, чамайг хэн алсан зэргээс шалтгаална. */
 
-const mkSet = (s) => new Set(s.split(' '));
-const TRAITS = {
-  heal: mkSet('necrolyte huskar alchemist life_stealer skeleton_king oracle abaddon dazzle warlock omniknight undying witch_doctor treant chen wisp shredder morphling slark phoenix enchantress juggernaut pugna winter_wyvern dragon_knight'),
-  evasion: mkSet('phantom_assassin windrunner brewmaster hoodwink'),
-  units: mkSet('phantom_lancer terrorblade naga_siren chaos_knight meepo arc_warden furion broodmother lycan beastmaster visage enigma warlock shadow_shaman venomancer lone_druid'),
-  invis: mkSet('riki clinkz bounty_hunter weaver nyx_assassin templar_assassin mirana treant'),
-  passive: mkSet('bristleback spectre phantom_assassin huskar ursa axe viper medusa drow_ranger troll_warlord faceless_void mars shredder tidehunter slark riki monkey_king'),
-  single: mkSet('lion shadow_shaman bane doom_bringer legion_commander batrider beastmaster pudge necrolyte lina skywrath_mage ogre_magi dragon_knight vengefulspirit sven chaos_knight winter_wyvern primal_beast marci grimstroke'),
-  aoe: mkSet('enigma magnataur faceless_void tidehunter earthshaker sand_king puck mars dark_seer axe centaur slardar treant kunkka elder_titan winter_wyvern primal_beast'),
-  silence: mkSet('silencer skywrath_mage night_stalker death_prophet drow_ranger riki doom_bringer puck earth_spirit disruptor'),
-  escape: mkSet('antimage queenofpain storm_spirit puck ember_spirit void_spirit weaver slark morphling faceless_void mirana pangolier earth_spirit monkey_king riki hoodwink'),
-  mana: mkSet('storm_spirit medusa obsidian_destroyer tinker zuus leshrac invoker skywrath_mage'),
-  save: mkSet('oracle omniknight abaddon winter_wyvern'),
-};
-const MAGIC_ITEMS = new Set(['radiance', 'dagon', 'dagon_2', 'dagon_3', 'dagon_4', 'dagon_5', 'ethereal_blade', 'mage_slayer', 'searing_signet', 'spirit_vessel',
-  'urn_of_shadows', 'maelstrom', 'mjollnir', 'gungir', 'shivas_guard', 'veil_of_discord', 'orb_of_venom', 'meteor_hammer', 'overwhelming_blink', 'arcane_blink']);
-
-/* Хэрэгцээ бүр: core-д болон support-д тохирох item-ууд */
-const NEEDS = {
-  magic: { core: ['black_king_bar', 'pipe', 'eternal_shroud', 'mage_slayer'], sup: ['glimmer_cape', 'pipe', 'force_staff'] },
-  phys: { core: ['shivas_guard', 'assault', 'blade_mail', 'heavens_halberd', 'butterfly'], sup: ['ghost', 'force_staff', 'solar_crest'] },
-  single: { core: ['sphere', 'lotus_orb', 'aeon_disk'], sup: ['force_staff', 'glimmer_cape', 'lotus_orb'] },
-  aoe: { core: ['black_king_bar', 'aeon_disk'], sup: ['force_staff', 'glimmer_cape'] },
-  silence: { core: ['manta', 'black_king_bar', 'lotus_orb'], sup: ['lotus_orb', 'glimmer_cape'] },
-  heal: { core: ['skadi', 'shivas_guard', 'spirit_vessel'], sup: ['spirit_vessel'] },
-  evasion: { core: ['monkey_king_bar', 'bloodthorn'], sup: [] },
-  units: { core: ['mjollnir', 'bfury', 'radiance', 'shivas_guard'], sup: ['crimson_guard'] },
-  invis: { core: ['dust', 'ward_sentry'], sup: ['dust', 'ward_sentry', 'gem'] },
-  passive: { core: ['silver_edge'], sup: [] },
-  escape: { core: ['orchid', 'bloodthorn', 'abyssal_blade', 'sheepstick', 'gleipnir'], sup: ['rod_of_atos', 'sheepstick'] },
-  mana: { core: ['diffusal_blade'], sup: [] },
-  save: { core: ['nullifier'], sup: [] },
-};
+/* TRAITS, NEEDS, MAGIC_ITEMS нь data.json-оос ачаалагдана (data.js). */
 
 const NEED_LABEL = {
   magic: 'Магик damage их ирсэн', phys: 'Физик (цохилт) damage их ирсэн', single: 'Нэг target-тай disable-д онилогдсон', aoe: 'Дайсанд том AoE disable',

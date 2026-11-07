@@ -2,11 +2,7 @@
 /* Тоглолтын дүн шинжилгээ: алдаа, анхааруулга, сайн зүйлсийг дүрмээр тодорхойлно.
    app.js доторх helper-ууд (heroByKey, itemByKey, fmtT, pct) ажиллах үед бэлэн байна. */
 
-const INVIS_HEROES = new Set([9, 32, 46, 56, 62, 63, 83, 88]); // Mirana, Riki, TA, Clinkz, BH, Weaver, Treant, Nyx
-const CONSUMABLES = new Set(['tpscroll', 'ward_observer', 'ward_sentry', 'ward_dispenser', 'dust', 'smoke_of_deceit',
-  'tango', 'tango_single', 'flask', 'clarity', 'enchanted_mango', 'faerie_fire', 'tome_of_knowledge', 'blood_grenade',
-  'cheese', 'aegis', 'refresher_shard', 'famango', 'great_famango', 'greater_famango']);
-const LH10_TARGET = { 1: 55, 2: 50, 3: 35 };
+/* CONSUMABLES, LH10_TARGET, TRAITS нь data.json-оос ачаалагдана (data.js). */
 const ROLE_NAMES = { 1: 'Carry (pos 1)', 2: 'Mid (pos 2)', 3: 'Offlane (pos 3)', 4: 'Soft support (pos 4)', 5: 'Hard support (pos 5)' };
 
 const isWin = m => (m.player_slot < 128) === !!m.radiant_win;
@@ -187,7 +183,7 @@ function analyzeMatch(m, me) {
 
   /* Invisible дайсан */
   if (parsed) {
-    const inv = enemies.filter(p => INVIS_HEROES.has(p.hero_id));
+    const inv = enemies.filter(p => TRAITS.invis && TRAITS.invis.has(hkey(p)));
     const pur = me.purchase || {};
     const det = (pur.dust || 0) + (pur.ward_sentry || 0) + (pur.gem || 0) + (me.sen_placed || 0);
     if (inv.length && det === 0 && dur >= 15) add('warn', `Дайсанд ${inv.map(p => hero(p.hero_id).n).join(', ')} байсан ч dust/sentry аваагүй`,

@@ -10,8 +10,7 @@ const ROLE_TIPS = {
   5: 'Observer ward-ыг 0 секундээс тогтмол тавь, sentry-гээр deward хий. Carry-гаа лайнд хамгаал. Мөнгөө ward, dust, smoke-д зарцуул.',
 };
 /* Магик damage-ийн голлогч (Nuker роль дээр нэмэлт) */
-const MAGIC_HEROES = mkSet('lina lion zuus leshrac skywrath_mage tinker queenofpain puck storm_spirit invoker pugna necrolyte death_prophet nyx_assassin lich jakiro ogre_magi earthshaker sand_king ember_spirit witch_doctor crystal_maiden disruptor obsidian_destroyer dark_willow grimstroke venomancer viper batrider phoenix warlock bane snapfire void_spirit techies ancient_apparition keeper_of_the_light rubick huskar shadow_shaman muerta leshrac');
-const PHYS_HEROES = mkSet('antimage phantom_assassin juggernaut sven troll_warlord ursa slark faceless_void drow_ranger luna medusa spectre life_stealer chaos_knight phantom_lancer terrorblade naga_siren weaver clinkz monkey_king gyrocopter lone_druid templar_assassin sniper skeleton_king riki bloodseeker marci legion_commander tiny kunkka razor morphling arc_warden');
+/* MAGIC_HEROES, PHYS_HEROES нь data.json-оос ачаалагдана (data.js). */
 
 function liveState() {
   try { return JSON.parse(ls('live') || 'null') || { me: null, role: 1, en: [] }; } catch (e) { return { me: null, role: 1, en: [] }; }

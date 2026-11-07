@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "version": 1,
+  "patch": "7.41",
+  "updated": "2026-11-07",
+  "note": "DotaLens-ийн гараар засварладаг өгөгдөл. Жагсаалт бүр нь зайгаар тусгаарласан OpenDota-гийн нэрс (баатар: npc_dota_hero_ угтваргүй, item: item_ угтваргүй). Засахдаа version-ийг заавал +1 болго — тэгвэл бүх хэрэглэгчийн app 6 цагийн дотор шинэчлэгдэнэ. Patch-ийн дараа хянаж дууссан бол patch-ийг шинэчил.",
+
+  "lh10Target": { "1": 55, "2": 50, "3": 35 },
+
+  "traits": {
+    "heal": "necrolyte huskar alchemist life_stealer skeleton_king oracle abaddon dazzle warlock omniknight undying witch_doctor treant chen wisp shredder morphling slark phoenix enchantress juggernaut pugna winter_wyvern dragon_knight",
+    "evasion": "phantom_assassin windrunner brewmaster hoodwink",
+    "units": "phantom_lancer terrorblade naga_siren chaos_knight meepo arc_warden furion broodmother lycan beastmaster visage enigma warlock shadow_shaman venomancer lone_druid",
+    "invis": "riki clinkz bounty_hunter weaver nyx_assassin templar_assassin mirana treant",
+    "passive": "bristleback spectre phantom_assassin huskar ursa axe viper medusa drow_ranger troll_warlord faceless_void mars shredder tidehunter slark riki monkey_king",
+    "single": "lion shadow_shaman bane doom_bringer legion_commander batrider beastmaster pudge necrolyte lina skywrath_mage ogre_magi dragon_knight vengefulspirit sven chaos_knight winter_wyvern primal_beast marci grimstroke",
+    "aoe": "enigma magnataur faceless_void tidehunter earthshaker sand_king puck mars dark_seer axe centaur slardar treant kunkka elder_titan winter_wyvern primal_beast",
+    "silence": "silencer skywrath_mage night_stalker death_prophet drow_ranger riki doom_bringer puck earth_spirit disruptor",
+    "escape": "antimage queenofpain storm_spirit puck ember_spirit void_spirit weaver slark morphling faceless_void mirana pangolier earth_spirit monkey_king riki hoodwink kez",
+    "mana": "storm_spirit medusa obsidian_destroyer tinker zuus leshrac invoker skywrath_mage",
+    "save": "oracle omniknight abaddon winter_wyvern"
+  },
+
+  "magicHeroes": "lina lion zuus leshrac skywrath_mage tinker queenofpain puck storm_spirit invoker pugna necrolyte death_prophet nyx_assassin lich jakiro ogre_magi earthshaker sand_king ember_spirit witch_doctor crystal_maiden disruptor obsidian_destroyer dark_willow grimstroke venomancer viper batrider phoenix warlock bane snapfire void_spirit techies ancient_apparition keeper_of_the_light rubick huskar shadow_shaman muerta",
+  "physHeroes": "antimage phantom_assassin juggernaut sven troll_warlord ursa slark faceless_void drow_ranger luna medusa spectre life_stealer chaos_knight phantom_lancer terrorblade naga_siren weaver clinkz monkey_king gyrocopter lone_druid templar_assassin sniper skeleton_king riki bloodseeker marci legion_commander tiny kunkka razor morphling arc_warden kez",
+
+  "needs": {
+    "magic":   { "core": "black_king_bar pipe eternal_shroud mage_slayer", "sup": "glimmer_cape pipe force_staff" },
+    "phys":    { "core": "shivas_guard assault blade_mail heavens_halberd butterfly", "sup": "ghost force_staff solar_crest" },
+    "single":  { "core": "sphere lotus_orb aeon_disk", "sup": "force_staff glimmer_cape lotus_orb" },
+    "aoe":     { "core": "black_king_bar aeon_disk", "sup": "force_staff glimmer_cape" },
+    "silence": { "core": "manta black_king_bar lotus_orb", "sup": "lotus_orb glimmer_cape" },
+    "heal":    { "core": "skadi shivas_guard spirit_vessel", "sup": "spirit_vessel" },
+    "evasion": { "core": "monkey_king_bar bloodthorn", "sup": "" },
+    "units":   { "core": "mjollnir bfury radiance shivas_guard", "sup": "crimson_guard" },
+    "invis":   { "core": "dust ward_sentry", "sup": "dust ward_sentry gem" },
+    "passive": { "core": "silver_edge", "sup": "" },
+    "escape":  { "core": "orchid bloodthorn abyssal_blade sheepstick gleipnir", "sup": "rod_of_atos sheepstick" },
+    "mana":    { "core": "diffusal_blade", "sup": "" },
+    "save":    { "core": "nullifier", "sup": "" }
+  },
+
+  "magicItems": "radiance dagon dagon_2 dagon_3 dagon_4 dagon_5 ethereal_blade mage_slayer searing_signet spirit_vessel urn_of_shadows maelstrom mjollnir gungir shivas_guard veil_of_discord orb_of_venom meteor_hammer overwhelming_blink arcane_blink",
+  "consumables": "tpscroll ward_observer ward_sentry ward_dispenser dust smoke_of_deceit tango tango_single flask clarity enchanted_mango faerie_fire tome_of_knowledge blood_grenade cheese aegis refresher_shard famango great_famango greater_famango",
+
+  "knownHeroes": "abaddon abyssal_underlord alchemist ancient_apparition antimage arc_warden axe bane batrider beastmaster bloodseeker bounty_hunter brewmaster bristleback broodmother centaur chaos_knight chen clinkz crystal_maiden dark_seer dark_willow dawnbreaker dazzle death_prophet disruptor doom_bringer dragon_knight drow_ranger earth_spirit earthshaker elder_titan ember_spirit enchantress enigma faceless_void furion grimstroke gyrocopter hoodwink huskar invoker jakiro juggernaut keeper_of_the_light kez kunkka legion_commander leshrac lich life_stealer lina lion lone_druid luna lycan magnataur marci mars medusa meepo mirana monkey_king morphling muerta naga_siren necrolyte nevermore night_stalker nyx_assassin obsidian_destroyer ogre_magi omniknight oracle pangolier phantom_assassin phantom_lancer phoenix primal_beast puck pudge pugna queenofpain rattletrap razor riki rubick sand_king shadow_demon shadow_shaman shredder silencer skeleton_king skywrath_mage slardar slark snapfire sniper spectre spirit_breaker storm_spirit sven techies templar_assassin terrorblade tidehunter tinker tiny treant troll_warlord tusk undying ursa vengefulspirit venomancer viper visage void_spirit warlock weaver windrunner winter_wyvern wisp witch_doctor zuus"
+}

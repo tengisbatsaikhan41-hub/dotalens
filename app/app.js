@@ -60,10 +60,19 @@ function rateNote(on) {
   el.style.display = on ? 'block' : 'none';
 }
 
-async function loadConstants() {
+/* OpenDota-гийн хамгийн сүүлийн patch (жишээ "7.41"). Алдаа гарвал null. */
+async function latestPatch() {
+  try { const ps = await api('/constants/patch'); return ps && ps.length ? ps[ps.length - 1].name : null; } catch (e) { return null; }
+}
+
+async function loadConstants(force) {
   let c = null;
   try { c = JSON.parse(ls('const5') || 'null'); } catch (e) { }
-  if (!c || Date.now() - c.t > 3 * 864e5) {
+  const patch = await latestPatch();
+  if (c && !c.patch && patch) { c.patch = patch; try { ls('const5', JSON.stringify(c)); } catch (e) { } }
+  const newPatch = !!(c && patch && c.patch && c.patch !== patch);
+  if (force || !c || newPatch || Date.now() - c.t > 3 * 864e5) {
+    if (newPatch) S.patchNotice = patch;
     ['const', 'const2', 'const3', 'const4'].forEach(k => ls(k, null));
     const [h, it, ab, aid] = await Promise.all([api('/constants/heroes'), api('/constants/items'), api('/constants/abilities'), api('/constants/ability_ids')]);
     const heroes = {};
@@ -72,10 +81,11 @@ async function loadConstants() {
     for (const [k, x] of Object.entries(it)) if (x && x.id != null) items[k] = { id: x.id, n: x.dname || k, img: x.img, cost: x.cost || 0, cr: !!x.created };
     const abil = {};
     for (const [k, x] of Object.entries(ab)) if (x && (x.dname || x.img)) abil[k] = { n: x.dname || k, img: x.img || '', t: x.dmg_type || undefined };
-    c = { t: Date.now(), heroes, items, abil, aid };
+    c = { t: Date.now(), heroes, items, abil, aid, patch: patch || (c && c.patch) || '' };
     try { ls('const5', JSON.stringify(c)); } catch (e) { }
   }
-  S.heroes = c.heroes; S.items = c.items; S.abil = c.abil || {}; S.aid = c.aid || {};
+  S.patch = c.patch || patch || ''; S.constT = c.t;
+  S.heroes = c.heroes; S.heroKey = {}; S.itemsId = {}; S.items = c.items; S.abil = c.abil || {}; S.aid = c.aid || {};
   for (const h of Object.values(c.heroes)) S.heroKey[h.k] = h;
   for (const [k, x] of Object.entries(c.items)) S.itemsId[x.id] = { ...x, key: k };
 }
@@ -682,21 +692,46 @@ async function viewSettings() {
     <div class="card"><h2>OpenDota API key (заавал биш)</h2>
       <div class="muted" style="margin-bottom:10px">Түлхүүргүйгээр минутад 60, өдөрт 2000 хүсэлт хийх боломжтой — хувийн хэрэглээнд хангалттай. Илүү хэрэгтэй бол opendota.com/api-keys -ээс авна.</div>
       <div class="row"><input id="key" class="inp" style="flex:1" type="password" value="${esc(S.apiKey)}" placeholder="API key"><button class="btn" id="sv">Хадгалах</button></div></div>
-    <div class="card"><h2>Кэш</h2><button class="btn ghost" id="clr">Баатар/item мэдээллийг шинэчлэх</button></div>`,
+    ${patchCardHTML()}`,
     after: v => {
       v.querySelector('#chg').onclick = () => { S.accountId = null; ls('accountId', null); loadPlayerCard(); location.hash = '#/overview'; route(); };
       v.querySelector('#sv').onclick = () => { S.apiKey = v.querySelector('#key').value.trim(); ls('apiKey', S.apiKey || null); S.cache.clear(); alert('Хадгаллаа'); };
-      v.querySelector('#clr').onclick = async () => { ls('const5', null); S.cache.clear(); await loadConstants(); alert('Шинэчиллээ'); };
+      v.querySelector('#clr').onclick = async e => {
+        e.target.disabled = true; e.target.textContent = 'Шинэчилж байна…';
+        S.cache.clear();
+        try { await loadConstants(true); await refreshRemoteData(true); } catch (err) { alert(err.message); }
+        showVersion(); route();
+      };
     }
   };
+}
+
+function patchCardHTML() {
+  const unk = unknownHeroes();
+  const stale = S.patch && GD.patch && GD.patch !== S.patch;
+  return `<div class="card"><h2>Patch ба өгөгдөл</h2>
+    <table style="max-width:640px"><tr><td class="muted">Dota-гийн одоогийн patch</td><td><b>${esc(S.patch || '—')}</b></td></tr>
+    <tr><td class="muted">Баатар/item/ability мэдээлэл (OpenDota)</td><td>${S.constT ? new Date(S.constT).toLocaleString() : '—'}-д татсан · шинэ patch гармагц өөрөө шинэчлэгдэнэ</td></tr>
+    <tr><td class="muted">Баатрын онцлог, counter item (data.json)</td><td>v${GD.version} · ${esc(GD.src)} · ${esc(GD.patch)} patch-д хянасан (${esc(GD.updated)})</td></tr></table>
+    ${stale ? `<div class="ins ins-warn" style="margin-top:12px"><div class="ins-ico">!</div><div><div class="ins-t">Жагсаалт ${esc(GD.patch)}-д хянагдсан, одоо ${esc(S.patch)} гарсан</div><div class="ins-d">Зарим баатрын онцлог/counter зөвлөгөө хуучирсан байж болно. data.json шинэчлэгдмэгц энд өөрөө орж ирнэ.</div></div></div>` : ''}
+    ${unk.length ? `<div class="ins ins-info" style="margin-top:12px"><div class="ins-ico">i</div><div><div class="ins-t">Онцлог нь тодорхойлогдоогүй баатар: ${esc(unk.join(', '))}</div><div class="ins-d">Эдгээрийн эсрэг counter зөвлөгөө (heal, evasion, disable гэх мэт) гарахгүй. data.json-д нэмэхэд болно.</div></div></div>` : ''}
+    <div class="row" style="margin-top:14px"><button class="btn ghost" id="clr">Одоо шинэчлэх</button>
+      <a class="btn ghost" href="${DATA_EDIT_URL}" target="_blank" rel="noopener">GitHub дээр data.json засах ↗</a></div></div>`;
+}
+
+function showVersion() {
+  const el = document.getElementById('ver');
+  if (el) el.textContent = `Patch ${S.patch || '?'} · data v${GD.version}`;
 }
 
 /* ---------- Boot ---------- */
 (async function boot() {
   $('#view').innerHTML = `<div class="loading"><span class="spin"></span>Баатар, item мэдээллийг ачааллаж байна…</div>`;
-  try { await loadConstants(); }
+  try { await Promise.all([loadConstants(), loadGameData()]); }
   catch (e) { $('#view').innerHTML = `<div class="err">${esc(e.message)}<div style="margin-top:10px"><button class="btn ghost" onclick="location.reload()">Дахин оролдох</button></div></div>`; return; }
   window.addEventListener('hashchange', route);
+  showVersion();
+  if (S.patchNotice) toast(`Шинэ patch ${S.patchNotice} илэрлээ — баатар, item мэдээллийг шинэчиллээ.`);
   loadPlayerCard();
   route();
 })();

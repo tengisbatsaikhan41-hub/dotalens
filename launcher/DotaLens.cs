@@ -15,13 +15,13 @@ using Microsoft.Win32;
 [assembly: AssemblyTitle("DotaLens")]
 [assembly: AssemblyDescription("Dota 2 stats and match analysis")]
 [assembly: AssemblyProduct("DotaLens")]
-[assembly: AssemblyVersion("1.2.0.0")]
-[assembly: AssemblyFileVersion("1.2.0.0")]
+[assembly: AssemblyVersion("1.3.0.0")]
+[assembly: AssemblyFileVersion("1.3.0.0")]
 
 static class Program
 {
     const int Port = 47290;
-    const string Version = "1.2.0";
+    const string Version = "1.3.0";
     const string RunKey = @"Software\Microsoft\Windows\CurrentVersion\Run";
     static readonly string Url = "http://localhost:" + Port + "/";
     static readonly Dictionary<string, byte[]> Files = new Dictionary<string, byte[]>(StringComparer.OrdinalIgnoreCase);
@@ -214,6 +214,7 @@ static class Program
             case ".html": return "text/html; charset=utf-8";
             case ".js": return "text/javascript; charset=utf-8";
             case ".css": return "text/css; charset=utf-8";
+            case ".json": return "application/json; charset=utf-8";
             case ".png": return "image/png";
             case ".svg": return "image/svg+xml";
             case ".ico": return "image/x-icon";

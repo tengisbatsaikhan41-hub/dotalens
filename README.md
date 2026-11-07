@@ -46,11 +46,23 @@ DotaLens.exe --autostart off   # унтраах
 
 Хөгжүүлэлтийн үед `DotaLens.bat`-аар `app/index.html`-г шууд нээж болно.
 
+## Dota patch гарахад
+
+- **Өөрөө шинэчлэгддэг:** баатар, item, ability-ийн мэдээлэл (OpenDota). App нээгдэх бүрдээ одоогийн patch-ийг шалгаж,
+  шинэ patch илэрвэл шууд дахин татна. Түгээмэл build, matchup, benchmark үргэлж OpenDota-гийн сүүлийн өгөгдлөөр гарна.
+- **Гараар засдаг:** [`app/data.json`](app/data.json) — баатрын онцлог (heal, evasion, disable, invis гэх мэт),
+  хэрэгцээ бүрийн counter item, магик damage-тай баатрууд, LH зорилт.
+  App энэ файлыг GitHub-аас 6 цаг тутам шалгадаг тул **GitHub дээр засаад `version`-ийг +1 болгоход л
+  бүх хэрэглэгч шинэ exe-гүйгээр шинэчлэгдэнэ.** Patch-ийн дараа хянаж дууссан бол `patch`-ийг шинэчил.
+- Тохиргоо → "Patch ба өгөгдөл" хэсэгт одоогийн patch, data.json-ий хувилбар, онцлог нь тодорхойлогдоогүй шинэ баатрууд харагдана.
+
 ## Бүтэц
 
 ```
 app/         Web app (HTML/CSS/JS, framework-гүй)
   app.js       Router, UI, API client
+  data.json    Гараар засдаг жагсаалтууд (GitHub-аас онлайнаар шинэчлэгдэнэ)
+  data.js      data.json ачаалагч
   analysis.js  Тоглолтын дүн шинжилгээ
   items.js     Тоглолтын нөхцөлд тулгуурласан item зөвлөгөө
   live.js      Live item зөвлөгөө
