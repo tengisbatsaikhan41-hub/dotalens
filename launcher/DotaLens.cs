@@ -15,26 +15,47 @@ using Microsoft.Win32;
 [assembly: AssemblyTitle("DotaLens")]
 [assembly: AssemblyDescription("Dota 2 stats and match analysis")]
 [assembly: AssemblyProduct("DotaLens")]
-[assembly: AssemblyVersion("1.1.0.0")]
-[assembly: AssemblyFileVersion("1.1.0.0")]
+[assembly: AssemblyVersion("1.2.0.0")]
+[assembly: AssemblyFileVersion("1.2.0.0")]
 
 static class Program
 {
     const int Port = 47290;
+    const string Version = "1.2.0";
+    const string RunKey = @"Software\Microsoft\Windows\CurrentVersion\Run";
     static readonly string Url = "http://localhost:" + Port + "/";
     static readonly Dictionary<string, byte[]> Files = new Dictionary<string, byte[]>(StringComparer.OrdinalIgnoreCase);
+    static readonly string BaseDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DotaLens");
+    static readonly string InstalledExe = Path.Combine(BaseDir, "DotaLens.exe");
     static string ProfileDir;
     static NotifyIcon Tray;
+    static bool Background;
+    static HttpListener Listener;
 
     [STAThread]
-    static void Main()
+    static void Main(string[] argv)
     {
         try
         {
-            ProfileDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DotaLens", "EdgeProfile");
+            ProfileDir = Path.Combine(BaseDir, "EdgeProfile");
             Directory.CreateDirectory(ProfileDir);
+            List<string> a = new List<string>(argv);
+            Background = a.Contains("--background");
 
-            if (AlreadyRunning()) { OpenWindow(); return; }
+            int ai = a.IndexOf("--autostart");
+            if (ai >= 0 && ai + 1 < a.Count)
+            {
+                bool on = a[ai + 1] == "on";
+                SetAutostart(on);
+                if (on) Process.Start(new ProcessStartInfo(InstalledExe, "--background") { UseShellExecute = false });
+                return;
+            }
+
+            string running = RunningVersion();
+            if (running != null)
+            {
+                if (string.CompareOrdinal(running, Version) >= 0 || !AskQuit()) { if (!Background) OpenWindow(); return; }
+            }
 
             Assembly asm = Assembly.GetExecutingAssembly();
             foreach (string name in asm.GetManifestResourceNames())
@@ -48,30 +69,41 @@ static class Program
                 }
             }
 
-            HttpListener listener = new HttpListener();
-            listener.Prefixes.Add(Url);
-            listener.Start();
-            Thread t = new Thread(() => Serve(listener));
+            Listener = new HttpListener();
+            Listener.Prefixes.Add(Url);
+            Listener.Start();
+            Thread t = new Thread(() => Serve(Listener));
             t.IsBackground = true;
             t.Start();
 
             Tray = new NotifyIcon();
             Tray.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
-            Tray.Text = "DotaLens";
+            Tray.Text = "DotaLens — сервер ажиллаж байна";
             ContextMenu menu = new ContextMenu();
             menu.MenuItems.Add("DotaLens нээх", (s, e) => OpenWindow());
+            MenuItem auto = new MenuItem("Windows асахад автоматаар асах");
+            auto.Checked = IsAutostart();
+            auto.Click += (s, e) =>
+            {
+                try { SetAutostart(!auto.Checked); auto.Checked = IsAutostart(); if (auto.Checked) Background = true; }
+                catch (Exception ex) { MessageBox.Show(ex.Message, "DotaLens"); }
+            };
+            menu.MenuItems.Add(auto);
+            menu.MenuItems.Add("-");
             menu.MenuItems.Add("Гарах", (s, e) => Quit());
             Tray.ContextMenu = menu;
             Tray.DoubleClick += (s, e) => OpenWindow();
             Tray.Visible = true;
 
-            OpenWindow();
+            // Автоматаар асах тохиргоотой бол цонх хаагдсан ч сервер ажилласаар байна.
+            if (IsAutostart()) Background = true;
+            if (!a.Contains("--background")) OpenWindow();
 
-            // Edge-ийн DotaLens цонх бүгд хаагдвал програмаа унтраана.
+            // Энгийн горимд: Edge-ийн DotaLens цонх бүгд хаагдвал програмаа унтраана.
             System.Windows.Forms.Timer watch = new System.Windows.Forms.Timer();
             watch.Interval = 5000;
             int idle = 0;
-            watch.Tick += (s, e) => { if (EdgeWindowOpen()) idle = 0; else if (++idle >= 2) Quit(); };
+            watch.Tick += (s, e) => { if (Background || EdgeWindowOpen()) idle = 0; else if (++idle >= 2) Quit(); };
             watch.Start();
 
             Application.Run();
@@ -89,14 +121,58 @@ static class Program
         Environment.Exit(0);
     }
 
-    static bool AlreadyRunning()
+    /* Өөр DotaLens сервер ажиллаж байвал хувилбарыг нь буцаана ("ok" = хуучин 1.1) */
+    static string RunningVersion()
     {
         try
         {
             using (WebClient wc = new WebClient())
-                return wc.DownloadString(Url + "__dotalens") == "ok";
+            {
+                string r = wc.DownloadString(Url + "__dotalens");
+                if (r == "ok") return "1.1.0";
+                return r.StartsWith("ok ") ? r.Substring(3) : null;
+            }
         }
-        catch { return false; }
+        catch { return null; }
+    }
+
+    /* Хуучин хувилбарыг унтраагаад порт сулрахыг хүлээнэ */
+    static bool AskQuit()
+    {
+        try { using (WebClient wc = new WebClient()) wc.DownloadString(Url + "__quit"); } catch { }
+        for (int i = 0; i < 20; i++) { Thread.Sleep(250); if (RunningVersion() == null) return true; }
+        return false;
+    }
+
+    static bool IsAutostart()
+    {
+        using (RegistryKey k = Registry.CurrentUser.OpenSubKey(RunKey))
+            return k != null && k.GetValue("DotaLens") != null;
+    }
+
+    static void SetAutostart(bool on)
+    {
+        using (RegistryKey k = Registry.CurrentUser.CreateSubKey(RunKey))
+        {
+            if (!on) { k.DeleteValue("DotaLens", false); return; }
+            string self = Application.ExecutablePath;
+            if (!string.Equals(Path.GetFullPath(self), Path.GetFullPath(InstalledExe), StringComparison.OrdinalIgnoreCase))
+            {
+                Directory.CreateDirectory(BaseDir);
+                // Суулгасан хуулбар ажиллаж байвал (файл түгжигдсэн) түүнийг зогсооно.
+                foreach (Process p in Process.GetProcessesByName("DotaLens"))
+                {
+                    try
+                    {
+                        if (p.Id != Process.GetCurrentProcess().Id &&
+                            string.Equals(p.MainModule.FileName, InstalledExe, StringComparison.OrdinalIgnoreCase)) { p.Kill(); p.WaitForExit(3000); }
+                    }
+                    catch { }
+                }
+                File.Copy(self, InstalledExe, true);
+            }
+            k.SetValue("DotaLens", "\"" + InstalledExe + "\" --background");
+        }
     }
 
     static void Serve(HttpListener l)
@@ -110,7 +186,15 @@ static class Program
                 string path = Uri.UnescapeDataString(c.Request.Url.AbsolutePath.TrimStart('/'));
                 if (path == "") path = "index.html";
                 byte[] body;
-                if (path == "__dotalens") { body = System.Text.Encoding.ASCII.GetBytes("ok"); c.Response.ContentType = "text/plain"; }
+                if (path == "__dotalens") { body = System.Text.Encoding.ASCII.GetBytes("ok " + Version); c.Response.ContentType = "text/plain"; }
+                else if (path == "__quit" && c.Request.Headers["Origin"] == null && c.Request.Headers["Referer"] == null)
+                {
+                    body = new byte[0];
+                    try { c.Response.Close(); } catch { }
+                    try { l.Stop(); } catch { }
+                    if (Tray != null) Tray.Visible = false;
+                    Environment.Exit(0);
+                }
                 else if (Files.TryGetValue(path, out body)) { c.Response.ContentType = Mime(path); }
                 else { c.Response.StatusCode = 404; body = new byte[0]; }
                 c.Response.Headers["Cache-Control"] = "no-cache";

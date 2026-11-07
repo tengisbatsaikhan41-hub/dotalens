@@ -30,7 +30,19 @@ powershell -ExecutionPolicy Bypass -File build.ps1
 ```
 
 `dist/DotaLens.exe` үүснэ. Энэ exe нь `app/` доторх бүх файлыг агуулж, `http://localhost:47290` дээр serve хийгээд
-Edge-ийн app цонхоор нээнэ. Цонхоо хаахад өөрөө унтарна (tray icon-оос ч гарч болно).
+Edge-ийн app цонхоор нээнэ. Сервер зөвхөн таны компьютер дээр ажиллана.
+
+### Windows асахад автоматаар асах
+
+Tray icon дээр баруун товч → **"Windows асахад автоматаар асах"**. Эсвэл:
+
+```powershell
+DotaLens.exe --autostart on    # асаах (exe-г %LOCALAPPDATA%\DotaLens руу суулгана)
+DotaLens.exe --autostart off   # унтраах
+```
+
+Асаалттай үед компьютер асахад сервер арын горимд (`--background`) асаж, цонх хаагдсан ч ажилласаар байна.
+Унтраалттай үед цонхоо хаахад програм өөрөө унтарна. Хуучин хувилбар ажиллаж байхад шинэ exe нээвэл хуучныг нь солино.
 
 Хөгжүүлэлтийн үед `DotaLens.bat`-аар `app/index.html`-г шууд нээж болно.
 
